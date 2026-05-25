@@ -454,6 +454,13 @@ DEFAULT_CONFIGS = OrderedDict(
             'metric_mode': 'NR',
             'score_range': '~0, ~1',
         },
+        'metaiqa': {
+            'metric_opts': {
+                'type': 'MetaIQA',
+            },
+            'metric_mode': 'NR',
+            'score_range': '0, 1',
+        },
         'uranker': {
             'metric_opts': {
                 'type': 'URanker',

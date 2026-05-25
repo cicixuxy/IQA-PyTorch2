@@ -4,7 +4,6 @@ Re-implemented and optimized for pyiqa ecosystem.
 """
 
 import os
-os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 import sys
 import torch
 import torch.nn as nn
