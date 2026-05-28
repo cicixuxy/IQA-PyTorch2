@@ -1,0 +1,20 @@
+# options/benchmark_LIVEC_val_opts.yml
+
+livec_val_pure: # 👈 评测时 -d 后面接这个自定义名字
+  name: livechallenge_val
+  type: GeneralNRDataset
+  dataroot_target: './datasets/LIVEC/Images'
+  meta_info_file: './datasets/meta_info/meta_info_LIVEChallengeDataset.csv'
+  
+  
+  split_ratio: '802'
+  split_index: 10
+  
+  phase: val
+  mos_range: [0, 100]
+  mos_normalize: true
+  lower_better: false
+  transform:
+    - type: ToTensor       # 把图片转成 0~1 的张量
+    - type: Scale          # 强行缩放回 0~255，这样才能和你模型里预训练权重的口味对上
+      scale: 255.0

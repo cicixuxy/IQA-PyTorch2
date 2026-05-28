@@ -14,8 +14,8 @@ from pyiqa.utils.registry import ARCH_REGISTRY
 from pyiqa.archs.arch_util import load_pretrained_network, get_url_from_name
 
 default_model_urls = {
-    'meta-train-seed': get_url_from_name('Metaiqa_kadid10k_tid2013.pth'),
-    'meta-infer-ready': get_url_from_name('Metaiqa_resnet18.pth'),
+    'meta-train-seed': get_url_from_name('Metaiqa_prior.pth'),
+    'meta-infer-ready': get_url_from_name('Metaiqa_livec.pth'),
 }
 
 
@@ -66,23 +66,31 @@ class MetaIQA(nn.Module):
             load_pretrained_network(self, pretrained_model_path, strict=False, weight_keys=None)
         elif pretrained:
             main_script = os.path.basename(sys.argv[0])
-            is_inference_env = 'inference_iqa.py' in main_script or 'test.py' in main_script
+            is_inference_env = (
+                    'inference_iqa.py' in main_script or
+                    'test.py' in main_script or
+                    'benchmark_results.py' in main_script
+            )
 
             if is_inference_env:
-                load_pretrained_network(
-                    self,
-                    default_model_urls['meta-infer-ready'],
-                    strict=False,
-                    weight_keys=None
-                )
-            else:
+                ckpt_path = default_model_urls['meta-infer-ready']
+                state_dict = torch.load(ckpt_path, map_location='cpu')
+                if 'params' in state_dict:
+                    state_dict = state_dict['params']
+                elif 'state_dict' in state_dict:
+                    state_dict = state_dict['state_dict']
 
-                load_pretrained_network(
-                    self,
-                    default_model_urls['meta-train-seed'],
-                    strict=False,
-                    weight_keys=None
-                )
+                clean_dict = {}
+                for k, v in state_dict.items():
+                    new_k = k.replace('net_g.', '').replace('module.', '').replace('net.', 'head.')
+                    clean_dict[new_k] = v
+
+
+                load_result = self.load_state_dict(clean_dict, strict=False)
+
+
+            else:
+                load_pretrained_network(self, default_model_urls['meta-train-seed'], strict=False, weight_keys=None)
 
     def preprocess(self, x):
         x = x[:, [2, 1, 0], :, :]
@@ -104,5 +112,6 @@ class MetaIQA(nn.Module):
 
         feat = self.resnet_layer(x)
         score = self.head(feat)
-        return score.squeeze(-1).view(-1, 1)
+
+        return score.view(-1, 1)
 
