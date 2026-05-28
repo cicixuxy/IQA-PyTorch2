@@ -13,7 +13,7 @@ datasets:
     meta_info_file: ./datasets/meta_info/meta_info_LIVEChallengeDataset.csv
 
     split_ratio: '802'
-    split_index: 10
+    split_index: 9
 
     mos_range: [0, 100]
     lower_better: false
@@ -34,7 +34,7 @@ datasets:
     meta_info_file: ./datasets/meta_info/meta_info_LIVEChallengeDataset.csv
 
     split_ratio: '802'
-    split_index: 10
+    split_index: 9
 
     mos_range: [0, 100]
     lower_better: false
